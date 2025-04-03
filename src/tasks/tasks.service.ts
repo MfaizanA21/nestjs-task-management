@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task, TaskStatus } from './tasks.model';
 import { v4 as uuid } from 'uuid';
 import { CreateTaskDto } from './dtos/create-task.dto';
@@ -13,17 +13,16 @@ export class TasksService {
   }
 
   getTaskById(id: string): Task | [] {
-    const task = this.tasks.find((task) => task.id === id);
-    if(task !== undefined) {
-      return task;
-    } else {
-      return [];
+    const found = this.tasks.find((task) => task.id === id);
+    if (!found) {
+      throw new NotFoundException(`Task with Id "${id}" not found`);
     }
+    return found;
   }
 
   updateTaskById(id: string, status: TaskStatus): Task | [] {
     const task = this.tasks.find((task) => task.id === id);
-    if(task !== undefined) {
+    if (task !== undefined) {
       task.status = status;
       return task;
     } else {
@@ -35,13 +34,13 @@ export class TasksService {
     const { status, search } = filerDto;
     let tasks = this.getAllTasks();
 
-    if(status) {
+    if (status) {
       tasks = tasks.filter((task) => task.status === status);
     }
 
-    if(search) {
+    if (search) {
       tasks = this.tasks.filter((task) => {
-        if(task.title.includes(search) || task.description.includes(search)) {
+        if (task.title.includes(search) || task.description.includes(search)) {
           return true;
         } else {
           return false;
@@ -52,10 +51,10 @@ export class TasksService {
     return tasks;
   }
 
-  deleteTask(id: string): string{
+  deleteTask(id: string): string {
     let message: string;
     const task = this.tasks.find((task) => task.id === id);
-    if(task !== undefined) {
+    if (task !== undefined) {
       this.tasks.splice(this.tasks.indexOf(task), 1);
       message = `Task with id ${id} deleted`;
     } else {
@@ -71,11 +70,10 @@ export class TasksService {
       title,
       description,
       status: TaskStatus.OPEN,
-    }
+    };
 
     this.tasks.push(task);
 
     return task;
   }
-  
 }
