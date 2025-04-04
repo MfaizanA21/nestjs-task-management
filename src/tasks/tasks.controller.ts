@@ -1,9 +1,14 @@
 import {
+  Body,
   // Body,
   Controller,
+  Delete,
   // Delete,
   Get,
   Param,
+  Patch,
+  Post,
+  Query,
   // Patch,
   // Post,
   // Query,
@@ -13,38 +18,37 @@ import { TasksService } from './tasks.service';
 // import { CreateTaskDto } from './dtos/create-task.dto';
 // import { GetTaskFilterDto } from './dtos/get-tasks-filter.dto';
 import { Task } from './task.entity';
+import { CreateTaskDto } from './dtos/create-task.dto';
+import { TaskStatus } from './task-status.enum';
+import { GetTaskFilterDto } from './dtos/get-tasks-filter.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
-  // @Get()
-  // getTasks(@Query() filerDto: GetTaskFilterDto): Task[] {
-  //   if (Object.keys(filerDto).length) {
-  //     return this.tasksService.getTaskswithFilter(filerDto);
-  //   } else {
-  //     return this.tasksService.getAllTasks();
-  //   }
-  // }
+  @Get()
+  getTasks(@Query() filterDto: GetTaskFilterDto): Promise<Task[]> {
+    return this.tasksService.getTasks(filterDto);
+  }
 
-  // @Post('create')
-  // createTask(@Body() createTaskDto: CreateTaskDto): Task {
-  //   console.log(createTaskDto.title, createTaskDto.description);
-  //   return this.tasksService.createTask(createTaskDto);
-  // }
+  @Post('create')
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+    console.log(createTaskDto.title, createTaskDto.description);
+    return this.tasksService.createTask(createTaskDto);
+  }
 
-  // @Delete('/:id')
-  // deleteTask(@Param('id') id: string): string {
-  //   return this.tasksService.deleteTask(id);
-  // }
+  @Delete('/:id')
+  deleteTask(@Param('id') id: string): Promise<string> {
+    return this.tasksService.deleteTask(id);
+  }
 
-  // @Patch('/update-task/:id/:status')
-  // updateTaskById(
-  //   @Param('id') id: string,
-  //   @Param('status') status: TaskStatus,
-  // ): Task | [] {
-  //   return this.tasksService.updateTaskById(id, status);
-  // }
+  @Patch('/update-task/:id/status')
+  updateTaskById(
+    @Param('id') id: string,
+    @Body('status') status: TaskStatus,
+  ): Promise<Task> {
+    return this.tasksService.updateTaskById(id, status);
+  }
 
   @Get('/:id')
   getTaskById(@Param('id') id: string): Promise<Task> | [] {
